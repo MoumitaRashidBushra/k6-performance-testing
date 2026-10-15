@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DMoney API Performance Report</title>
+  <style>
+    :root { color-scheme: light; font-family: "Segoe UI", sans-serif; color: #202a33; background: #f3f6f5; }
+    body { max-width: 1200px; margin: 0 auto; padding: 32px 20px; }
+    h1 { margin: 0; font-size: 28px; }
+    h2 { margin: 32px 0 12px; font-size: 19px; }
+    .eyebrow { color: #376b5b; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+    .status { display: inline-block; margin-top: 14px; padding: 7px 11px; border-radius: 4px; font-weight: 700; }
+    .status.PASS, .pass { color: #17643b; background: #e5f4eb; }
+    .status.FAIL, .fail { color: #9d2929; background: #fbe9e7; }
+    .status.UNAVAILABLE { color: #66550d; background: #fff5cf; }
+    .table-wrap { overflow-x: auto; border: 1px solid #d7dfdc; background: #fff; }
+    table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
+    th, td { padding: 10px 12px; border-bottom: 1px solid #e7ecea; }
+    th { background: #eaf0ed; font-size: 12px; }
+    tbody tr:last-child td { border-bottom: 0; }
+    .slower { color: #a33a2b; font-weight: 700; }
+    .faster { color: #17643b; font-weight: 700; }
+    .neutral { color: #5b6570; }
+    .note, footer { color: #5b6570; font-size: 13px; }
+    code { font-size: 12px; }
+    @media print { :root { background: #fff; } body { max-width: none; padding: 0; } .table-wrap { overflow: visible; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="eyebrow">k6 performance test</div>
+    <h1>DMoney API Performance Report</h1>
+    <div class="status PASS">Thresholds: PASS (48/48 passed)</div>
+  </header>
+  <main>
+    <section>
+      <h2>Results by active phase</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>API</th><th>Phase</th><th>Requests</th><th>Throughput</th><th>Avg (ms)</th><th>p95 (ms)</th><th>p95 change</th><th>Failed</th><th>Checks</th></tr></thead>
+          <tbody><tr>
+        <td>deposit</td>
+        <td>30-60s</td>
+        <td>30</td>
+        <td>1.00 req/s</td>
+        <td>26.55</td>
+        <td>41.81</td>
+        <td class="neutral">baseline</td>
+        <td>0.00%</td>
+        <td>100.00%</td>
+      </tr>
+<tr>
+        <td>deposit</td>
+        <td>60-90s</td>
+        <td>60</td>
+        <td>2.00 req/s</td>
+        <td>26.00</td>
+        <td>43.90</td>
+        <td class="slower">+4.98%</td>
+        <td>0.00%</td>
+        <td>100.00%</td>
+      </tr>
+<tr>
+        <td>sendmoney</td>
+        <td>0-30s</td>
+        <td>30</td>
+        <td>1.00 req/s</td>
+        <td>31.68</td>
+        <td>48.93</td>
+        <td class="neutral">baseline</td>
+        <td>0.00%</td>
+        <td>100.00%</td>
+      </tr>
+<tr>
+        <td>sendmoney</td>
+        <td>30-60s</td>
+        <td>29</td>
+        <td>0.97 req/s</td>
+        <td>33.81</td>
+        <td>64.37</td>
+        <td class="slower">+31.54%</td>
+        <td>0.00%</td>
+        <td>100.00%</td>
+      </tr>
+<tr>
+        <td>sendmoney</td>
+        <td>60-90s</td>
+        <td>30</td>
+        <td>1.00 req/s</td>
+        <td>31.31</td>
+        <td>61.67</td>
+        <td class="faster">-4.19%</td>
+        <td>0.00%</td>
+        <td>100.00%</td>
+      </tr>
+<tr>
+        <td>payment</td>
+        <td>0-30s</td>
+        <td>30</td>
+        <td>1.00 req/s</td>
+        <td>34.26</td>
+        <td>61.12</td>
+        <td class="neutral">baseline</td>
+        <td>0.00%</td>
+        <td>100.00%</td>
+      </tr>
+<tr>
+        <td>payment</td>
+        <td>30-60s</td>
+        <td>29</td>
+        <td>0.97 req/s</td>
+        <td>33.82</td>
+        <td>50.64</td>
+        <td class="faster">-17.14%</td>
+        <td>0.00%</td>
+        <td>100.00%</td>
+      </tr>
+<tr>
+        <td>payment</td>
+        <td>60-90s</td>
+        <td>30</td>
+        <td>1.00 req/s</td>
+        <td>32.69</td>
+        <td>66.03</td>
+        <td class="slower">+30.38%</td>
+        <td>0.00%</td>
+        <td>100.00%</td>
+      </tr>
+<tr>
+        <td>payment</td>
+        <td>90-120s</td>
+        <td>119</td>
+        <td>3.97 req/s</td>
+        <td>30.71</td>
+        <td>64.36</td>
+        <td class="faster">-2.53%</td>
+        <td>0.00%</td>
+        <td>100.00%</td>
+      </tr></tbody>
+        </table>
+      </div>
+      <p class="note">p95 change is relative to the previous active phase. Positive means slower; negative means faster. Throughput is requests divided by the 30-second phase.</p>
+    </section>
+    <section>
+      <h2>Threshold results</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Metric</th><th>Threshold</th><th>Result</th></tr></thead>
+          <tbody><tr>
+        <td>checks{api:deposit,phase:60-90s}</td>
+        <td><code>rate&gt;0.99</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>http_req_duration{api:deposit,phase:60-90s}</td>
+        <td><code>p(95)&lt;1000</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>checks{api:payment,phase:0-30s}</td>
+        <td><code>rate&gt;0.99</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>checks{api:sendmoney,phase:0-30s}</td>
+        <td><code>rate&gt;0.99</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>checks{api:payment,phase:30-60s}</td>
+        <td><code>rate&gt;0.99</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>checks{api:payment}</td>
+        <td><code>rate&gt;0.99</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>checks{api:deposit,phase:30-60s}</td>
+        <td><code>rate&gt;0.99</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>http_req_duration{api:payment,phase:90-120s}</td>
+        <td><code>p(95)&lt;1000</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>checks{api:sendmoney}</td>
+        <td><code>rate&gt;0.99</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>http_req_duration{api:sendmoney,phase:60-90s}</td>
+        <td><code>p(95)&lt;1000</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>http_req_failed</td>
+        <td><code>rate&lt;0.01</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>http_reqs{api:deposit,phase:30-60s}</td>
+        <td><code>count&gt;0</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>http_reqs{api:payment,phase:90-120s}</td>
+        <td><code>count&gt;0</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>http_req_failed{api:payment,phase:0-30s}</td>
+        <td><code>rate&lt;0.01</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>http_reqs{api:payment,phase:30-60s}</td>
+        <td><code>count&gt;0</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>http_req_duration{api:payment,phase:60-90s}</td>
+        <td><code>p(95)&lt;1000</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>http_reqs{api:payment,phase:0-30s}</td>
+        <td><code>count&gt;0</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>http_req_duration{api:deposit}</td>
+        <td><code>p(95)&lt;1000</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>checks{api:payment,phase:60-90s}</td>
+        <td><code>rate&gt;0.99</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>checks{api:sendmoney,phase:60-90s}</td>
+        <td><code>rate&gt;0.99</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>checks{api:deposit}</td>
+        <td><code>rate&gt;0.99</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>http_req_duration</td>
+        <td><code>p(95)&lt;1000</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>http_req_failed{api:deposit}</td>
+        <td><code>rate&lt;0.01</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>http_req_failed{api:sendmoney,phase:60-90s}</td>
+        <td><code>rate&lt;0.01</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>http_reqs{api:payment,phase:60-90s}</td>
+        <td><code>count&gt;0</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>http_reqs{api:deposit,phase:60-90s}</td>
+        <td><code>count&gt;0</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>http_reqs{api:sendmoney,phase:60-90s}</td>
+        <td><code>count&gt;0</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>http_req_failed{api:sendmoney}</td>
+        <td><code>rate&lt;0.01</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>http_req_duration{api:payment}</td>
+        <td><code>p(95)&lt;1000</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>http_req_failed{api:sendmoney,phase:0-30s}</td>
+        <td><code>rate&lt;0.01</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>http_req_failed{api:payment,phase:90-120s}</td>
+        <td><code>rate&lt;0.01</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>checks{api:sendmoney,phase:30-60s}</td>
+        <td><code>rate&gt;0.99</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>http_req_failed{api:deposit,phase:60-90s}</td>
+        <td><code>rate&lt;0.01</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>http_req_duration{api:payment,phase:0-30s}</td>
+        <td><code>p(95)&lt;1000</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>checks</td>
+        <td><code>rate&gt;0.99</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>http_req_failed{api:sendmoney,phase:30-60s}</td>
+        <td><code>rate&lt;0.01</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>http_reqs{api:sendmoney,phase:0-30s}</td>
+        <td><code>count&gt;0</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>http_req_failed{api:payment,phase:60-90s}</td>
+        <td><code>rate&lt;0.01</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>http_req_duration{api:payment,phase:30-60s}</td>
+        <td><code>p(95)&lt;1000</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>http_req_duration{api:sendmoney}</td>
+        <td><code>p(95)&lt;1000</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>http_reqs{api:sendmoney,phase:30-60s}</td>
+        <td><code>count&gt;0</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>http_req_duration{api:sendmoney,phase:0-30s}</td>
+        <td><code>p(95)&lt;1000</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>http_req_failed{api:payment,phase:30-60s}</td>
+        <td><code>rate&lt;0.01</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>http_req_failed{api:payment}</td>
+        <td><code>rate&lt;0.01</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>http_req_failed{api:deposit,phase:30-60s}</td>
+        <td><code>rate&lt;0.01</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>checks{api:payment,phase:90-120s}</td>
+        <td><code>rate&gt;0.99</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>http_req_duration{api:deposit,phase:30-60s}</td>
+        <td><code>p(95)&lt;1000</code></td>
+        <td class="pass">PASS</td>
+      </tr>
+<tr>
+        <td>http_req_duration{api:sendmoney,phase:30-60s}</td>
+        <td><code>p(95)&lt;1000</code></td>
+        <td class="pass">PASS</td>
+      </tr></tbody>
+        </table>
+      </div>
+      <p class="note">Targets: failed request rate &lt; 1%, p95 response time &lt; 1000 ms, checks &gt; 99%.</p>
+    </section>
+  </main>
+  <footer>Generated by k6 from dmoney-performance.js.</footer>
+</body>
+</html>

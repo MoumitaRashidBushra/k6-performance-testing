@@ -1,0 +1,75 @@
+{
+  "enabledMcpjsonServers": ["bitbucket"],
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sub=$(jq -r \".tool_input.subagent_type // empty\"); if [ \"$sub\" = \"qa-agent\" ] || [ \"$sub\" = \"global-qa-agent\" ]; then cat <<EOF\n{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"allow\",\"permissionDecisionReason\":\"qa-agent memory reminder injected\",\"additionalContext\":\"Project policy (this repo QA lessons learned): before analyzing anything, qa-agent MUST Read this project's memory directory under ~/.claude/projects/ (the entry whose name is this project's absolute path with / and . replaced by -, then /memory/) -- resolve it, do not assume a literal path -- read MEMORY.md there first, then every memory file whose index line is relevant. Those memory files are NOT auto-injected into a subagent's context; they only apply if the subagent reads them. If that directory does not exist (this .claude folder was copied to another machine or user, or this is a headless run), skip it silently and follow the skill files under .claude/skills/ instead -- they are the complete spec. Do not block, do not ask for the memory, do not invent a prior lesson. That file records prior false-positive patterns (DEV-2897 review) that must not be repeated. qa-agent MUST also use this project's own .claude/skills/ (not the global ~/.claude/skills/ copy) for find-bug/analyze-requirement/test-design -- this project's copies are kept current with this codebase's lessons learned. Do not skip either step. PERFORMANCE: unless this is a pure explain-code or root-cause task, also launch qa-agent-advocate right now in the SAME message as a second background Agent call, with a task like 'CONTEXT-PREP: gather context in parallel while qa-agent works -- read this project's memory directory under ~/.claude/projects/ (the entry whose name is this project's absolute path with / and . replaced by -, then /memory/) -- resolve it, do not assume a literal path if it exists (MEMORY.md index first, then the relevant entries; skip without comment if absent), fetch the Jira ticket if an ID is given, pull the code diff/changes, check relevant DB state. Render no verdict yet.' Remember that advocate agent's id/name -- when qa-agent later finishes, hand its output to that SAME advocate via SendMessage instead of spawning a new one, so it can finalize its review immediately using context it already gathered.\"}}\nEOF\nfi\ntrue",
+            "timeout": 10,
+            "statusMessage": "Checking qa-agent memory policy..."
+          }
+        ]
+      },
+      {
+        "matcher": "Skill",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "skill=$(jq -r \".tool_input.skill // empty\"); if echo \"$skill\" | grep -qE '(^|:)find-bug$'; then cat <<EOF\n{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"allow\",\"permissionDecisionReason\":\"find-bug skill memory reminder injected\",\"additionalContext\":\"Project policy: find-bug is being invoked directly (bypassing the qa-agent wrapper). You MUST still Read this project's memory directory under ~/.claude/projects/ (the entry whose name is this project's absolute path with / and . replaced by -, then /memory/) -- resolve it, do not assume a literal path first (MEMORY.md index, then the relevant entries -- it records prior false-positive patterns on this codebase; if that directory does not exist, skip it and follow .claude/skills/find-bug/SKILL.md alone), MUST use this project's own .claude/skills/find-bug/SKILL.md (not the global ~/.claude/skills/ copy), and MUST run every resulting finding through an adversarial qa-agent-advocate review (Agent tool, subagent_type qa-agent-advocate) before presenting any finding as a confirmed bug. This applies whether find-bug is invoked via the qa-agent, the Skill tool directly, or any other path.\"}}\nEOF\nfi\ntrue",
+            "timeout": 10,
+            "statusMessage": "Checking find-bug skill memory policy..."
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cmd=$(jq -r \".tool_input.command // empty\"); if printf '%s' \"$cmd\" | grep -qE '(^|[^a-zA-Z0-9_-])git([[:space:]]|$)'; then ask=0; if printf '%s' \"$cmd\" | grep -qE '(^|[^a-zA-Z0-9_-])git[[:space:]]+((-C[[:space:]]+[^[:space:]]+|-c[[:space:]]+[^[:space:]]+|--no-pager|--git-dir=[^[:space:]]+|--work-tree=[^[:space:]]+)[[:space:]]+)*(add|commit|push)([[:space:]]|$)'; then ask=1; fi; if printf '%s' \"$cmd\" | grep -qE '(^|[^a-zA-Z0-9_-])eval([[:space:]]|$)|(^|[^a-zA-Z0-9_-])(sh|bash|zsh|dash)[[:space:]]+-c|(^|[^a-zA-Z0-9_-])xargs([[:space:]]|$)|-exec[[:space:]]|(^|[[:space:]])alias[[:space:]]|(^|[[:space:]])source[[:space:]]|\\.sh([[:space:]]|$)'; then ask=1; fi; if [ \"$ask\" -eq 1 ]; then cat <<EOF\n{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"ask\",\"permissionDecisionReason\":\"Project guardrail: git add, git commit and git push are never run unless the user asked for it in the current turn. This command stages, commits or pushes -- or it reaches the shell indirectly (eval, sh -c, xargs, -exec, a script file, an alias) so its real effect cannot be inspected. Approve ONLY if the user explicitly requested this action now. If they asked for QA work -- test cases, bug findings, a review, an explanation -- this was not requested: deny it and finish the actual task. Writing files under testing_docs/ needs no git operation; leave changes uncommitted for the user to review. Never bundle a commit or push with unrelated work, and never push to share results. Every other git command runs without a prompt, so there is no need to route work through this one.\"}}\nEOF\nelse cat <<EOF\n{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"allow\",\"permissionDecisionReason\":\"Project guardrail: git command that is not add, commit or push -- auto-approved.\"}}\nEOF\nfi; fi\ntrue",
+            "timeout": 10,
+            "statusMessage": "Checking git add/commit/push guardrail..."
+          }
+        ]
+      },
+      {
+        "matcher": "SendMessage",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "to=$(jq -r \".tool_input.to // empty\"); cat <<EOF\n{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"allow\",\"permissionDecisionReason\":\"qa-agent/advocate parallel-dispatch reminder injected\",\"additionalContext\":\"Project policy: if this SendMessage is resuming a qa-agent instance with new or revised work that will produce/alter test cases, acceptance criteria, or bug findings (a fix round, a correction, a re-run -- not just the first dispatch, which a separate hook already covers), you MUST in this SAME turn also SendMessage the paired qa-agent-advocate telling it what is about to change and what to re-verify once qa-agent reports back, so it is context-prepped and ready the instant qa-agent finishes rather than cold-starting after. Do not wait for qa-agent to finish before involving the advocate on any revision round. This does not apply when the SendMessage target is not a qa-agent, or the task is a pure explain/summarize/root-cause request with no test-case or bug-finding output.\"}}\nEOF\ntrue",
+            "timeout": 10,
+            "statusMessage": "Checking qa-agent/advocate parallel-dispatch policy..."
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sub=$(jq -r \".tool_input.subagent_type // empty\"); if [ \"$sub\" = \"qa-agent\" ] || [ \"$sub\" = \"global-qa-agent\" ]; then cat <<EOF\n{\"decision\":\"block\",\"reason\":\"qa-agent just finished. Project policy requires an adversarial qa-agent-advocate review before qa-agent's output is presented as confirmed, whether or not a Jira ticket was involved. This applies to exactly three deliverables: test cases / test design, acceptance criteria, and bug findings (including security findings). It does NOT apply to an explain-code walkthrough, a root-cause analysis, a requirement summary, or a general question answered -- present those directly, with no review pass, since a review there is pure overhead. The only thing a missing ticket changes is the destination of the verdicts: with a ticket they are written to testing_docs/<KEY>.review.md; without one they are applied directly to the chat reply (rejected findings dropped or downgraded) and no review file is created. If a qa-agent-advocate was already launched in parallel (Context-Prep Mode, at the same time qa-agent started), send it qa-agent's actual output NOW via SendMessage to that SAME agent id/name -- do not spawn a duplicate, it already has the Jira ticket, diff, and DB context loaded and should finalize its verdict immediately. If no advocate is running yet (it wasn't parallelized this time), spawn one now (Agent tool, subagent_type qa-agent-advocate) in whichever mode matches what qa-agent actually produced: Bug Review Mode for proposed defects/bug findings, Test Case Review Mode for a test-design/test-case document with no bug findings attached. Do not present qa-agent output to the user as confirmed (bug or test-case doc) until qa-agent-advocate has reviewed it in the matching mode.\",\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"qa-agent finished. Hand off to the already-running qa-agent-advocate via SendMessage if one was launched in parallel at start; otherwise spawn one now, in the mode matching qa-agent's actual output (bug findings vs test-case doc), before reporting to the user, per this project QA policy.\"}}\nEOF\nfi\ntrue",
+            "timeout": 10,
+            "statusMessage": "Checking qa-agent-advocate review policy..."
+          }
+        ]
+      },
+      {
+        "matcher": "Skill",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "skill=$(jq -r \".tool_input.skill // empty\"); if echo \"$skill\" | grep -qE '(^|:)find-bug$'; then cat <<EOF\n{\"decision\":\"block\",\"reason\":\"The find-bug skill was just invoked directly and produced bug findings. Project policy requires an adversarial qa-agent-advocate review of every finding before it is presented as a confirmed bug -- with or without a Jira ticket, and for direct Skill-tool invocations exactly as for qa-agent-driven ones. Without a ticket, the review still runs; only the review FILE is skipped, its verdicts being applied straight to the reply instead. You MUST now spawn qa-agent-advocate (Agent tool, subagent_type qa-agent-advocate) to run the Challenge Protocol against each finding just reported. qa-agent-advocate must itself Read this project's memory directory under ~/.claude/projects/ (the entry whose name is this project's absolute path with / and . replaced by -, then /memory/) -- resolve it, do not assume a literal path first (skipping it if that directory does not exist), plus any existing testing_docs/<KEY>.review.md for the ticket, where <KEY> is the actual Jira key. Do not present the findings to the user as confirmed until qa-agent-advocate has reviewed them.\",\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"find-bug skill finished. Spawn qa-agent-advocate next to challenge every finding before reporting to the user, per this project QA policy.\"}}\nEOF\nfi\ntrue",
+            "timeout": 10,
+            "statusMessage": "Checking find-bug skill advocate-review policy..."
+          }
+        ]
+      }
+    ]
+  }
+}

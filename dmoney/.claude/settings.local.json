@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__db-mcp__list_databases",
+      "mcp__db-mcp__list_tables",
+      "mcp__db-mcp__describe_table",
+      "mcp__db-mcp__get_sample_rows",
+      "mcp__db-mcp__execute_query",
+      "Bash(mkdir -p \"d:\\\\RoadToSDET\\\\dmoney\\\\Test-Ducoment\\\\scratch_check\" 2>&1; echo ok)",
+      "Bash(cat >> *)",
+      "Bash(python3 -c ' *)",
+      "Bash(sed -i '/test line with/d' \"d:/RoadToSDET/dmoney/Test-Ducoment/deposit-cashin-deep-dive.md\" *)",
+      "Bash(sed -i '100,108d' \"d:/RoadToSDET/dmoney/Test-Ducoment/deposit-cashin-deep-dive.md\" *)"
+    ],
+    "additionalDirectories": [
+      "d:\\RoadToSDET\\dmoney\\Test-Ducoment"
+    ]
+  }
+}

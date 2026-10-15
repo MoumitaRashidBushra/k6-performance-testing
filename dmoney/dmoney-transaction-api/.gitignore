@@ -1,0 +1,8 @@
+node_modules
+.env
+.env.dev
+test.js
+logs
+Reports
+package-lock.json
+gmail-service-account.json

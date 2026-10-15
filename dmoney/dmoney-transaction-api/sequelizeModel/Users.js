@@ -1,0 +1,152 @@
+const { Sequelize, DataTypes, Op } = require('sequelize');
+const { sequelize } = require('./db');
+const { hashPassword } = require('../utils/hash');
+
+const Users = sequelize.define('Users', {
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
+    },
+    password: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    phone_number: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    nid: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    role: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    status: {
+        type: DataTypes.ENUM('pending', 'active', 'suspended'),
+        allowNull: false,
+        defaultValue: 'pending'
+    },
+    otp: {
+        type: DataTypes.STRING(4),
+        allowNull: true,
+        defaultValue: null
+    },
+    otp_expire: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        defaultValue: null
+    },
+    reset_token: {
+        type: DataTypes.STRING(64),
+        allowNull: true,
+        defaultValue: null
+    },
+    reset_token_expires: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        defaultValue: null
+    },
+    photo: {
+        type: DataTypes.STRING,
+        allowNull: true
+    }
+}, {
+    indexes: [
+        {
+            fields: ['role']
+        }
+    ]
+});
+
+const predefinedUsers = [
+    {
+        name: "SYSTEM",
+        email: "system@dmoney.com",
+        password: hashPassword("1234"),
+        phone_number: "SYSTEM",
+        nid: "123456789",
+        role: "Agent",
+        status: "active",
+        photo: null
+    },
+    {
+        name: "Admin",
+        email: "admin@dmoney.com",
+        password: hashPassword("1234"),
+        phone_number: "01686606909",
+        nid: "123456789",
+        role: "Admin",
+        status: "active",
+        photo: null
+    },
+    {
+        name: "Test Agent",
+        email: "salmansrabon+agent@gmail.com",
+        password: hashPassword("1234"),
+        phone_number: "01686606901",
+        nid: "123456789",
+        role: "Agent",
+        status: "active",
+        photo: null
+    },
+    {
+        name: "Test Customer 1",
+        email: "salmansrabon+customer1@gmail.com",
+        password: hashPassword("1234"),
+        phone_number: "01686606902",
+        nid: "123456789",
+        role: "Customer",
+        status: "active",
+        photo: null
+    },
+    {
+        name: "Test Customer 2",
+        email: "salmansrabon+customer2@gmail.com",
+        password: hashPassword("1234"),
+        phone_number: "01686606903",
+        nid: "123456789",
+        role: "Customer",
+        status: "active",
+        photo: null
+    },
+    {
+        name: "Test Merchant",
+        email: "salmansrabon+merchant@gmail.com",
+        password: hashPassword("1234"),
+        phone_number: "01686606905",
+        nid: "123456789",
+        role: "Merchant",
+        status: "active",
+        photo: null
+    }
+];
+
+// Sync database and conditionally insert predefined data
+sequelize.sync().then(async () => {
+    for (const user of predefinedUsers) {
+        const existingUser = await Users.findOne({
+            where: {
+                [Op.or]: [
+                    { email: user.email },
+                    { phone_number: user.phone_number }
+                ]
+            }
+        });
+
+        if (!existingUser) {
+            await Users.create(user);
+            console.log(`User ${user.email} has been inserted.`);
+        } else {
+            console.log(`User ${user.email} already exists and was not inserted.`);
+        }
+    }
+});
+
+module.exports = { Users };

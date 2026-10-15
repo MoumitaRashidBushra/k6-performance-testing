@@ -1,0 +1,458 @@
+{
+	"info": {
+		"_postman_id": "1032213f-36c2-40a3-a5f3-0e85ace63c33",
+		"name": "Dmoney-transaction-collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "1844288",
+		"_collection_link": "https://sqa654321.postman.co/workspace/Road-to-SDET~22b6b96e-159f-404a-ba22-d9e61076436f/collection/1844288-1032213f-36c2-40a3-a5f3-0e85ace63c33?action=share&source=collection_link&creator=1844288"
+	},
+	"item": [
+		{
+			"name": "Server status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/transaction",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"transaction"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Client Info",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/transaction",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"transaction"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData= pm.response.json();\r",
+							"pm.collectionVariables.set(\"token\",jsonData.token)\r",
+							"pm.environment.set(\"token\",jsonData.token)"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\":\"admin@roadtocareer.net\",\r\n    \"password\":\"1234\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/user/login",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Trnx List",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "bearer {{token}}"
+					},
+					{
+						"key": "X-AUTH-SECRET-KEY",
+						"value": "{{partnerKey}}"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/transaction/list?limit=10",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"transaction",
+						"list"
+					],
+					"query": [
+						{
+							"key": "limit",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search Transaction",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "bearer {{token}}"
+					},
+					{
+						"key": "X-AUTH-SECRET-KEY",
+						"value": "{{partnerKey}}"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/transaction/search/TXN596737",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"transaction",
+						"search",
+						"TXN596737"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "transaction statement",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "bearer {{token}}"
+					},
+					{
+						"key": "X-Auth-SECRET-KEY",
+						"value": "{{partnerKey}}"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/transaction/statement/01686606901",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"transaction",
+						"statement",
+						"01686606901"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Deposit by System",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "bearer {{token}}"
+					},
+					{
+						"key": "X-AUTH-SECRET-KEY",
+						"value": "{{partnerKey}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"from_account\": \"SYSTEM\",\r\n  \"to_account\": \"01686606901\",\r\n  \"amount\": 2000\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/transaction/deposit",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"transaction",
+						"deposit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User balance",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "bearer {{token}}"
+					},
+					{
+						"key": "X-AUTH-SECRET-KEY",
+						"value": "{{partnerKey}}"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/transaction/balance/01686606902",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"transaction",
+						"balance",
+						"01686606902"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Deposit",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "bearer {{token}}"
+					},
+					{
+						"key": "X-AUTH-SECRET-KEY",
+						"value": "{{partnerKey}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"from_account\": \"01686606901\",\r\n  \"to_account\": \"01686606902\",\r\n  \"amount\": 50\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/transaction/deposit",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"transaction",
+						"deposit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Withdraw",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "bearer {{token}}"
+					},
+					{
+						"key": "X-AUTH-SECRET-KEY",
+						"value": "{{partnerKey}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"from_account\": \"01686606902\",\r\n  \"to_account\": \"01686606901\",\r\n  \"amount\": 100\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/transaction/withdraw",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"transaction",
+						"withdraw"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Payment",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "bearer {{token}}"
+					},
+					{
+						"key": "X-AUTH-SECRET-KEY",
+						"value": "{{partnerKey}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"from_account\": \"01686606901\",\r\n  \"to_account\": \"01686606905\",\r\n  \"amount\": 1000\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/transaction/payment",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"transaction",
+						"payment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Payment with discount",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "bearer {{token}}"
+					},
+					{
+						"key": "X-AUTH-SECRET-KEY",
+						"value": "{{partnerKey}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"from_account\": \"01686606902\",\r\n  \"to_account\": \"01686606905\",\r\n  \"discount_code\":\"top5\",\r\n  \"discount_amount\":10,\r\n  \"amount\": 500\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/transaction/payment",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"transaction",
+						"payment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Send money",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "bearer {{token}}"
+					},
+					{
+						"key": "X-AUTH-SECRET-KEY",
+						"value": "{{partnerKey}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"from_account\": \"01686606902\",\r\n  \"to_account\": \"01686606903\",\r\n  \"amount\": 20\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/transaction/sendmoney",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"transaction",
+						"sendmoney"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "token",
+			"value": ""
+		},
+		{
+			"key": "baseUrl",
+			"value": ""
+		},
+		{
+			"key": "partnerKey",
+			"value": ""
+		}
+	]
+}

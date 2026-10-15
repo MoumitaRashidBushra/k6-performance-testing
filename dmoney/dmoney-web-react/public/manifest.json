@@ -1,0 +1,21 @@
+{
+  "name": "dMoney — QA Practice Platform",
+  "short_name": "dMoney",
+  "description": "Open-source Mobile Financial Service platform for QA engineers to practise manual, API, security, and automation testing.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f0f1a",
+  "theme_color": "#6366f1",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["finance", "education", "productivity"],
+  "icons": [
+    {
+      "src": "/dmoney-favicon.ico",
+      "sizes": "48x48 32x32 16x16",
+      "type": "image/x-icon",
+      "purpose": "any maskable"
+    }
+  ]
+}
